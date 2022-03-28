@@ -13,17 +13,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GameState {
-    private static final BigDecimal DEFAULT_STARTING_BALANCE = BigDecimal.valueOf(5000d);
+    private final CashDeductionPolicy cashDeductionPolicy;
+    private final Player player;
+    private final BigDecimal balance;
 
-    private CashDeductionPolicy cashDeductionPolicy;
-    private Player player;
-    private BigDecimal balance;
-
-    public static GameState newPaidGameWithPlayer(Player player) {
-        return new GameState(PaidCashDeductionPolicy.create(), player, DEFAULT_STARTING_BALANCE);
-    }
-
-    public static GameState newFreeGameWithPlayer(Player player) {
-        return new GameState(FreeCashDeductionPolicy.create(), player, DEFAULT_STARTING_BALANCE);
+    public static GameState newGame(CashDeductionPolicy cashDeductionPolicy, Player player, BigDecimal balance) {
+        return new GameState(cashDeductionPolicy, player, balance);
     }
 }

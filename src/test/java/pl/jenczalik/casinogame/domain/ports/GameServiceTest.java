@@ -4,18 +4,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import pl.jenczalik.casinogame.config.CashPolicyConfig;
+import pl.jenczalik.casinogame.domain.model.FreeCashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.model.GameStartDetails;
 import pl.jenczalik.casinogame.domain.model.GameState;
 import pl.jenczalik.casinogame.domain.model.GameType;
 import pl.jenczalik.casinogame.domain.model.Player;
 
 class GameServiceTest {
-
     // Subject
-    GameService gameService = new GameService();
+    private final GameService gameService = new GameService(
+            new CashPolicyConfig(),
+            Collections.singletonList(FreeCashDeductionPolicy.create())
+    );
 
     @Test
     void given_a_player_with_id_and_free_game_type_when_game_started_then_should_have_5000_credits() {
@@ -30,8 +35,8 @@ class GameServiceTest {
         final GameState gameState = gameService.startGame(gameStartDetails);
 
         // then
-        assertEquals(gameState.getPlayer().getId(), uuid);
-        assertEquals(gameState.getBalance(), BigDecimal.valueOf(5000d));
+        assertEquals(uuid, gameState.getPlayer().getId());
+        assertEquals(BigDecimal.valueOf(5000d), gameState.getBalance());
     }
 
     @Test
@@ -44,6 +49,6 @@ class GameServiceTest {
 
         // when
         final IllegalStateException e = assertThrows(IllegalStateException.class, () -> gameService.startGame(gameStartDetails));
-        assertEquals(e.getMessage(), "could not start new game. Player is null");
+        assertEquals("could not start new game. Player is null", e.getMessage());
     }
 }
