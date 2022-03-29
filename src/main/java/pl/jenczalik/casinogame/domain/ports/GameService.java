@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import lombok.extern.log4j.Log4j2;
+import org.springframework.transaction.annotation.Transactional;
 import pl.jenczalik.casinogame.config.CashPolicyConfig;
 import pl.jenczalik.casinogame.domain.model.CashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.model.GameNotFoundException;
@@ -38,6 +39,7 @@ public class GameService {
         this.roundService = roundService;
     }
 
+    @Transactional
     public GameState startGame(GameStartDetails gameStartDetails) {
         validateGameStartDetails(gameStartDetails);
 
@@ -50,6 +52,7 @@ public class GameService {
         return gameStateRepository.save(newGame);
     }
 
+    @Transactional
     public GameState playRound(PlayRoundDetails playRoundDetails) {
         log.debug("game {}. Playing new round with a bet {}, by player {}",
                 playRoundDetails.getGameId(),

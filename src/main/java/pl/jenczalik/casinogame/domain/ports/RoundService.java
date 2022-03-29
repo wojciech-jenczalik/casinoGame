@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.jenczalik.casinogame.config.RoundRewardsConfig;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
 
@@ -19,6 +21,7 @@ public class RoundService {
     private final RoundResultRepository roundResultRepository;
     private final Clock clock;
 
+    @Transactional(propagation = Propagation.MANDATORY)
     RoundResult playRound(BigDecimal bet, UUID gameId) {
         final BigDecimal cashWinRand = BigDecimal.valueOf(random.nextInt(100));
         final BigDecimal winnings;
