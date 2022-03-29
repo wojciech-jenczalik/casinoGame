@@ -13,6 +13,8 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+
+// TODO add loggers
 public class GameState {
     private final UUID gameId;
     private final GameType gameType;

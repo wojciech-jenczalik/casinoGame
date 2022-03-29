@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import pl.jenczalik.casinogame.config.CashPolicyConfig;
 import pl.jenczalik.casinogame.domain.model.CashDeductionPolicy;
+import pl.jenczalik.casinogame.domain.model.GameNotFoundException;
 import pl.jenczalik.casinogame.domain.model.GameStartDetails;
 import pl.jenczalik.casinogame.domain.model.GameState;
 import pl.jenczalik.casinogame.domain.model.GameType;
@@ -17,6 +18,8 @@ import pl.jenczalik.casinogame.domain.model.PlayRoundDetails;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
 
 @Log4j2
+
+// TODO add logs
 public class GameService {
     private final CashPolicyConfig cashPolicyConfig;
     private final Map<GameType, CashDeductionPolicy> cashDeductionPoliciesMap;
@@ -55,7 +58,8 @@ public class GameService {
         validatePlayRoundDetails(gameId, playerId);
 
         final BigDecimal bet = playRoundDetails.getBet();
-        GameState gameState = gameStateRepository.getByGameIdAndPlayerId(gameId, playerId);
+        GameState gameState = gameStateRepository.getByGameIdAndPlayerId(gameId, playerId)
+                .orElseThrow(() -> new GameNotFoundException(String.format("game with ID [%s] not found for user with ID [%s]", gameId, playerId)));
         validateBet(bet, gameState.getBalance());
 
         final CashDeductionPolicy deductionPolicy;
