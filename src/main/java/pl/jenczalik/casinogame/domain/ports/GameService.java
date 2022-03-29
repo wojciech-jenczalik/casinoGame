@@ -72,7 +72,7 @@ public class GameService {
 
         gameState.deductBalance(deductionPolicy, bet);
 
-        final RoundResult roundResult = roundService.playRound(bet);
+        final RoundResult roundResult = roundService.playRound(bet, gameId);
         if (roundResult.isFreeRoundWon()) {
             gameState.incrementFreeRounds();
         }

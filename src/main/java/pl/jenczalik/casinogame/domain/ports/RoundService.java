@@ -2,6 +2,9 @@ package pl.jenczalik.casinogame.domain.ports;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -13,8 +16,10 @@ import pl.jenczalik.casinogame.domain.model.RoundResult;
 class RoundService {
     private final RoundRewardsConfig roundRewardsConfig;
     private final SecureRandom random;
+    private final RoundResultRepository roundResultRepository;
+    private final Clock clock;
 
-    RoundResult playRound(BigDecimal bet) {
+    RoundResult playRound(BigDecimal bet, UUID gameId) {
         final BigDecimal cashWinRand = BigDecimal.valueOf(random.nextInt(100));
         final BigDecimal winnings;
 
@@ -31,9 +36,7 @@ class RoundService {
         final BigDecimal freeRoundWinRand = BigDecimal.valueOf(random.nextInt(100));
         final boolean isFreeRoundWon = freeRoundWinRand.compareTo(roundRewardsConfig.getFreeRoundWinChancePercentage()) < 0;
 
-        // TODO persist round result
-
-        return new RoundResult(winnings, isFreeRoundWon);
+        return roundResultRepository.save(new RoundResult(winnings, isFreeRoundWon, gameId, LocalDateTime.now(clock)));
     }
 
     private boolean smallWin(BigDecimal rand) {

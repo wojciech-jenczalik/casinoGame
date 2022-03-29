@@ -1,24 +1,43 @@
 package pl.jenczalik.casinogame.domain.ports;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.AdditionalAnswers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import pl.jenczalik.casinogame.config.RoundRewardsConfig;
 import pl.jenczalik.casinogame.domain.framework.SecureRandomStub;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
 
+@ExtendWith(MockitoExtension.class)
 class RoundServiceTest {
+    private static final UUID RANDOM_GAME_UUID = UUID.randomUUID();
     private final RoundRewardsConfig roundRewardsConfig = new RoundRewardsConfig();
     private final SecureRandomStub secureRandomStub = new SecureRandomStub();
+    @Mock
+    private RoundResultRepository roundResultRepository;
+    private final Clock clock = Clock.systemDefaultZone();
 
-    @SuppressWarnings("FieldCanBeLocal") // for brevity
+    @SuppressWarnings("FieldCanBeLocal")
     // Subject
     private RoundService roundService;
+
+    @BeforeEach
+    void setup() {
+        when(roundResultRepository.save(any())).then(AdditionalAnswers.returnsFirstArg());
+    }
 
     @ParameterizedTest
     @MethodSource("populateTestArguments")
@@ -31,10 +50,10 @@ class RoundServiceTest {
 
         // given
         secureRandomStub.populateWithInts(cashWinRandomRoll, freeRoundRandomRoll);
-        roundService = new RoundService(roundRewardsConfig, secureRandomStub);
+        roundService = new RoundService(roundRewardsConfig, secureRandomStub, roundResultRepository, clock);
 
         // when
-        final RoundResult roundResult = roundService.playRound(bet);
+        final RoundResult roundResult = roundService.playRound(bet, RANDOM_GAME_UUID);
 
         // then
         assertEquals(0, roundResult.getWinnings().compareTo(expectedWinnings));
