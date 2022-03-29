@@ -10,7 +10,7 @@ class PlayerTest {
     @Test
     void given_null_uuid_when_player_created_then_should_throw_illegal_argument_exception() {
         // given, when, then
-        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Player.fromUuid(null));
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Player.fromId(null));
         assertEquals("player's UUID can not be null", e.getMessage());
     }
 }

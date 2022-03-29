@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Log4j2
 public class GameState {
     private final UUID gameId;

@@ -68,7 +68,7 @@ class GameServiceTest {
         final UUID uuid = UUID.randomUUID();
         final GameStartDetails gameStartDetails = new GameStartDetails(
                 GameType.FREE,
-                Player.fromUuid(uuid)
+                Player.fromId(uuid)
         );
 
         // when

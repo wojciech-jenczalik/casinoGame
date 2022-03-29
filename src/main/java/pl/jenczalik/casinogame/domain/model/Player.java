@@ -17,10 +17,10 @@ public class Player {
     }
 
     public static Player newPlayer() {
-        return fromUuid(UUID.randomUUID());
+        return fromId(UUID.randomUUID());
     }
 
-    public static Player fromUuid(UUID uuid) {
+    public static Player fromId(UUID uuid) {
         if (uuid == null) {
             throw new IllegalArgumentException("player's UUID can not be null");
         }

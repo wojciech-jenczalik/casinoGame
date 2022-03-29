@@ -13,7 +13,7 @@ import pl.jenczalik.casinogame.domain.model.RoundResult;
 
 @Log4j2
 @RequiredArgsConstructor
-class RoundService {
+public class RoundService {
     private final RoundRewardsConfig roundRewardsConfig;
     private final SecureRandom random;
     private final RoundResultRepository roundResultRepository;
