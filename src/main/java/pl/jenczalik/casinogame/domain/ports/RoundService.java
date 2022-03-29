@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,10 @@ public class RoundService {
         final boolean isFreeRoundWon = freeRoundWinRand.compareTo(roundRewardsConfig.getFreeRoundWinChancePercentage()) < 0;
 
         return roundResultRepository.save(new RoundResult(winnings, isFreeRoundWon, gameId, LocalDateTime.now(clock)));
+    }
+
+    List<RoundResult> getRoundsForGame(UUID gameId) {
+        return roundResultRepository.getRoundsByGameId(gameId);
     }
 
     private boolean smallWin(BigDecimal rand) {

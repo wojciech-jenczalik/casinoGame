@@ -17,7 +17,7 @@ public class GameStateResponse {
     private String playerId;
     private GameType gameType;
 
-    public static GameStateResponse fromGameState(GameState gameState) {
+    public static GameStateResponse fromDomain(GameState gameState) {
         return new GameStateResponse(
                 gameState.getGameId(),
                 gameState.getBalance(),

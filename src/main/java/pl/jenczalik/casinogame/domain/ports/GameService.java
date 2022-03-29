@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.transaction.annotation.Transactional;
 import pl.jenczalik.casinogame.config.CashPolicyConfig;
 import pl.jenczalik.casinogame.domain.model.CashDeductionPolicy;
+import pl.jenczalik.casinogame.domain.model.GameHistory;
 import pl.jenczalik.casinogame.domain.model.GameNotFoundException;
 import pl.jenczalik.casinogame.domain.model.GameStartDetails;
 import pl.jenczalik.casinogame.domain.model.GameState;
@@ -87,6 +88,14 @@ public class GameService {
         }
         gameState.addToBalance(roundResult.getWinnings());
         return gameStateRepository.save(gameState);
+    }
+
+    public GameHistory getGameHistory(UUID gameId) {
+        final GameState gameState = gameStateRepository.getByGameId(gameId)
+                .orElseThrow(() -> new GameNotFoundException(String.format("game with ID [%s] not found", gameId)));
+        final List<RoundResult> rounds = roundService.getRoundsForGame(gameId);
+
+        return new GameHistory(gameState, rounds);
     }
 
     private void validateGameStartDetails(GameStartDetails gameStartDetails) {

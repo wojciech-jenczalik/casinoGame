@@ -10,5 +10,7 @@ import pl.jenczalik.casinogame.domain.model.GameState;
 public interface GameStateRepository {
     @Transactional(propagation = Propagation.MANDATORY)
     GameState save(GameState gameState);
+
     Optional<GameState> getByGameIdAndPlayerId(UUID gameId, UUID playerId);
+    Optional<GameState> getByGameId(UUID gameId);
 }

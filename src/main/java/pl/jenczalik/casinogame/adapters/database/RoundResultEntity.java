@@ -37,6 +37,7 @@ class RoundResultEntity {
                 .roundResultId(UUID.randomUUID())
                 .winnings(roundResult.getWinnings())
                 .freeRoundWon(roundResult.isFreeRoundWon())
+                .gameId(roundResult.getGameId())
                 .playDateTime(roundResult.getPlayDateTime())
                 .build();
     }
