@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ class GameServiceTest {
             new CashPolicyConfig(),
             Collections.singletonList(FreeCashDeductionPolicy.create()),
             gameStateRepository,
-            new RoundService(new RoundRewardsConfig())
+            new RoundService(new RoundRewardsConfig(), new SecureRandom())
     );
 
     @Test

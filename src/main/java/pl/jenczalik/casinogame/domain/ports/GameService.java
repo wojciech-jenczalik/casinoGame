@@ -14,7 +14,6 @@ import pl.jenczalik.casinogame.domain.model.GameStartDetails;
 import pl.jenczalik.casinogame.domain.model.GameState;
 import pl.jenczalik.casinogame.domain.model.GameType;
 import pl.jenczalik.casinogame.domain.model.PlayRoundDetails;
-import pl.jenczalik.casinogame.domain.model.Player;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
 
 @Log4j2
@@ -39,14 +38,13 @@ public class GameService {
     }
 
     public GameState startGame(GameStartDetails gameStartDetails) {
-        // TODO add dedicated validation function to validate gameStartDetails
-        final Player player = gameStartDetails.getPlayer();
-        final GameType gameType = gameStartDetails.getGameType();
-        if (player == null) {
-            throw new IllegalStateException("could not start new game. Player is null");
-        }
+        validateGameStartDetails(gameStartDetails);
 
-        final GameState newGame = GameState.newGame(gameType, player, cashPolicyConfig.getDefaultInitialBalance());
+        final GameState newGame = GameState.newGame(
+                gameStartDetails.getGameType(),
+                gameStartDetails.getPlayer(),
+                cashPolicyConfig.getDefaultInitialBalance());
+
         return gameStateRepository.save(newGame);
     }
 
@@ -78,6 +76,19 @@ public class GameService {
         gameStateRepository.save(gameState);
 
         return gameState;
+    }
+
+    // TODO consider to move validation methods to separate class
+    private void validateGameStartDetails(GameStartDetails gameStartDetails) {
+        if (gameStartDetails.getPlayer() == null) {
+            throw new IllegalStateException("could not start new game. Player is null");
+        }
+        final CashDeductionPolicy deductionPolicy = cashDeductionPoliciesMap.get(gameStartDetails.getGameType());
+        if (deductionPolicy == null) {
+            throw new IllegalStateException(String.format(
+                    "could not start a new game. Cash deduction policy not found for game type: %s",
+                    gameStartDetails.getGameType()));
+        }
     }
 
     private void validatePlayRoundDetails(UUID gameId, UUID playerId) {

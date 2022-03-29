@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.With;
 
 @Getter
 @ToString
@@ -25,12 +24,10 @@ public class GameState {
         return new GameState(UUID.randomUUID(), gameType, player, balance, 0);
     }
 
-    // TODO test
     public void addToBalance(BigDecimal amount) {
         balance = balance.add(amount);
     }
 
-    // TODO test
     public void deductBalance(CashDeductionPolicy deductionPolicy, BigDecimal deductionAmount) {
         balance = deductionPolicy.deductBetFromBalance(deductionAmount, balance);
     }

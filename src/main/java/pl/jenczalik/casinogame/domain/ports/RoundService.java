@@ -1,7 +1,7 @@
 package pl.jenczalik.casinogame.domain.ports;
 
 import java.math.BigDecimal;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,10 +12,10 @@ import pl.jenczalik.casinogame.domain.model.RoundResult;
 @RequiredArgsConstructor
 class RoundService {
     private final RoundRewardsConfig roundRewardsConfig;
+    private final SecureRandom random;
 
-    // TODO test
     RoundResult playRound(BigDecimal bet) {
-        final BigDecimal cashWinRand = BigDecimal.valueOf(new Random().nextInt(100));
+        final BigDecimal cashWinRand = BigDecimal.valueOf(random.nextInt(100));
         final BigDecimal winnings;
 
         if (smallWin(cashWinRand)) {
@@ -28,7 +28,7 @@ class RoundService {
             winnings = BigDecimal.ZERO;
         }
 
-        final BigDecimal freeRoundWinRand = BigDecimal.valueOf(new Random().nextInt(100));
+        final BigDecimal freeRoundWinRand = BigDecimal.valueOf(random.nextInt(100));
         final boolean isFreeRoundWon = freeRoundWinRand.compareTo(roundRewardsConfig.getFreeRoundWinChancePercentage()) < 0;
 
         // TODO persist round result
