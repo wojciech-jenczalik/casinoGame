@@ -1,15 +1,15 @@
 package pl.jenczalik.casinogame.domain.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
-import pl.jenczalik.casinogame.config.CashPolicyConfig;
 
 class PaidCashDeductionPolicyTest {
     // Subject
-    private final CashDeductionPolicy paidPolicy = new PaidCashDeductionPolicy(new CashPolicyConfig());
+    private final CashDeductionPolicy paidPolicy = PaidCashDeductionPolicy.create();
 
     @Test
     void given_bet_smaller_than_balance_and_within_configured_constraints_then_should_subtract_from_balance() {

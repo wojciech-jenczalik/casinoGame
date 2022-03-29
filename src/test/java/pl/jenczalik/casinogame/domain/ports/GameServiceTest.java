@@ -8,7 +8,9 @@ import java.util.Collections;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import pl.jenczalik.casinogame.config.CashPolicyConfig;
+import pl.jenczalik.casinogame.config.RoundRewardsConfig;
 import pl.jenczalik.casinogame.domain.model.FreeCashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.model.GameStartDetails;
 import pl.jenczalik.casinogame.domain.model.GameState;
@@ -16,10 +18,15 @@ import pl.jenczalik.casinogame.domain.model.GameType;
 import pl.jenczalik.casinogame.domain.model.Player;
 
 class GameServiceTest {
+    @Mock
+    private GameStateRepository gameStateRepository;
+
     // Subject
     private final GameService gameService = new GameService(
             new CashPolicyConfig(),
-            Collections.singletonList(FreeCashDeductionPolicy.create())
+            Collections.singletonList(FreeCashDeductionPolicy.create()),
+            gameStateRepository,
+            new RoundService(new RoundRewardsConfig())
     );
 
     @Test
