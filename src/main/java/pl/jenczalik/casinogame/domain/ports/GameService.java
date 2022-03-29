@@ -62,19 +62,19 @@ public class GameService {
 
         final CashDeductionPolicy deductionPolicy;
         if (gameState.getFreeRounds() > 0) {
-            gameState = gameState.decrementFreeRounds();
+            gameState.decrementFreeRounds();
             deductionPolicy = cashDeductionPoliciesMap.get(GameType.FREE);
         } else {
             deductionPolicy = cashDeductionPoliciesMap.get(gameState.getGameType());
         }
 
-        gameState = gameState.deductBalance(deductionPolicy, bet);
+        gameState.deductBalance(deductionPolicy, bet);
 
         final RoundResult roundResult = roundService.playRound(bet);
         if (roundResult.isFreeRoundWon()) {
-            gameState = gameState.incrementFreeRounds();
+            gameState.incrementFreeRounds();
         }
-        gameState = gameState.addToBalance(roundResult.getWinnings());
+        gameState.addToBalance(roundResult.getWinnings());
         gameStateRepository.save(gameState);
 
         return gameState;

@@ -18,35 +18,28 @@ public class GameState {
     private final UUID gameId;
     private final GameType gameType;
     private final Player player;
-    @With
-    private final BigDecimal balance;
-    @With
-    private final int freeRounds;
+    private BigDecimal balance;
+    private int freeRounds;
 
     public static GameState newGame(GameType gameType, Player player, BigDecimal balance) {
         return new GameState(UUID.randomUUID(), gameType, player, balance, 0);
     }
 
     // TODO test
-    public GameState addToBalance(BigDecimal amount) {
-        final BigDecimal newBalance = balance.add(amount);
-        return this.withBalance(newBalance);
+    public void addToBalance(BigDecimal amount) {
+        balance = balance.add(amount);
     }
 
     // TODO test
-    public GameState deductBalance(CashDeductionPolicy deductionPolicy, BigDecimal deductionAmount) {
-        final BigDecimal newBalance = deductionPolicy.deductBetFromBalance(deductionAmount, balance);
-        return this.withBalance(newBalance);
+    public void deductBalance(CashDeductionPolicy deductionPolicy, BigDecimal deductionAmount) {
+        balance = deductionPolicy.deductBetFromBalance(deductionAmount, balance);
     }
 
-    // TODO test
-    public GameState incrementFreeRounds() {
-        final int newFreeRounds = freeRounds + 1;
-        return this.withFreeRounds(newFreeRounds);
+    public void incrementFreeRounds() {
+        ++freeRounds;
     }
 
-    public GameState decrementFreeRounds() {
-        final int newFreeRounds = freeRounds - 1;
-        return this.withFreeRounds(newFreeRounds);
+    public void decrementFreeRounds() {
+        --freeRounds;
     }
 }
