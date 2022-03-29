@@ -21,13 +21,14 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.jenczalik.casinogame.config.CashPolicyConfig;
 import pl.jenczalik.casinogame.config.RoundRewardsConfig;
-import pl.jenczalik.casinogame.domain.model.FreeCashDeductionPolicy;
+import pl.jenczalik.casinogame.domain.services.FreeCashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.model.GameStartDetails;
 import pl.jenczalik.casinogame.domain.model.GameState;
 import pl.jenczalik.casinogame.domain.model.GameType;
-import pl.jenczalik.casinogame.domain.model.PaidCashDeductionPolicy;
+import pl.jenczalik.casinogame.domain.services.PaidCashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.model.PlayRoundDetails;
 import pl.jenczalik.casinogame.domain.model.Player;
+import pl.jenczalik.casinogame.domain.services.RoundService;
 
 @ExtendWith(MockitoExtension.class)
 class GameServiceTest {

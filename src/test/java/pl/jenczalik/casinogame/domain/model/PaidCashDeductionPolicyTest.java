@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
+import pl.jenczalik.casinogame.domain.services.CashDeductionPolicy;
+import pl.jenczalik.casinogame.domain.services.PaidCashDeductionPolicy;
 
 class PaidCashDeductionPolicyTest {
     // Subject

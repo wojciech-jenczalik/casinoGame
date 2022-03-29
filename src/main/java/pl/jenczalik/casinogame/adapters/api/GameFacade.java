@@ -1,6 +1,8 @@
 package pl.jenczalik.casinogame.adapters.api;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -33,5 +35,12 @@ class GameFacade {
     GameHistoryResponse getGameHistory(UUID gameId) {
         final GameHistory gameHistory = gameService.getGameHistory(gameId);
         return GameHistoryResponse.fromDomain(gameHistory);
+    }
+
+    List<GameHistoryResponse> getGamesHistoryForPlayer(UUID playerId) {
+        final List<GameHistory> gamesHistoryForPlayer = gameService.getGamesHistoryForPlayer(playerId);
+        return gamesHistoryForPlayer.stream()
+                .map(GameHistoryResponse::fromDomain)
+                .collect(Collectors.toList());
     }
 }

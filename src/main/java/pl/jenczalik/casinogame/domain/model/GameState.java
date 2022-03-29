@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+import pl.jenczalik.casinogame.domain.services.CashDeductionPolicy;
 
 @Getter
 @ToString

@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.jenczalik.casinogame.config.RoundRewardsConfig;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
+import pl.jenczalik.casinogame.domain.services.RoundService;
 
 @ExtendWith(MockitoExtension.class)
 class RoundServiceTest {

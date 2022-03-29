@@ -1,4 +1,4 @@
-package pl.jenczalik.casinogame.domain.ports;
+package pl.jenczalik.casinogame.domain.services;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.jenczalik.casinogame.config.RoundRewardsConfig;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
+import pl.jenczalik.casinogame.domain.ports.RoundResultRepository;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class RoundService {
     private final Clock clock;
 
     @Transactional(propagation = Propagation.MANDATORY)
-    RoundResult playRound(BigDecimal bet, UUID gameId) {
+    public RoundResult playRound(BigDecimal bet, UUID gameId) {
         final BigDecimal cashWinRand = BigDecimal.valueOf(random.nextInt(100));
         final BigDecimal winnings;
 
@@ -43,7 +44,7 @@ public class RoundService {
         return roundResultRepository.save(new RoundResult(winnings, isFreeRoundWon, gameId, LocalDateTime.now(clock)));
     }
 
-    List<RoundResult> getRoundsForGame(UUID gameId) {
+    public List<RoundResult> getRoundsForGame(UUID gameId) {
         return roundResultRepository.getRoundsByGameId(gameId);
     }
 

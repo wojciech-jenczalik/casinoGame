@@ -1,6 +1,7 @@
 package pl.jenczalik.casinogame.domain.ports;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.transaction.annotation.Transactional;
 import pl.jenczalik.casinogame.config.CashPolicyConfig;
-import pl.jenczalik.casinogame.domain.model.CashDeductionPolicy;
+import pl.jenczalik.casinogame.domain.services.CashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.model.GameHistory;
 import pl.jenczalik.casinogame.domain.model.GameNotFoundException;
 import pl.jenczalik.casinogame.domain.model.GameStartDetails;
@@ -18,6 +19,7 @@ import pl.jenczalik.casinogame.domain.model.GameState;
 import pl.jenczalik.casinogame.domain.model.GameType;
 import pl.jenczalik.casinogame.domain.model.PlayRoundDetails;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
+import pl.jenczalik.casinogame.domain.services.RoundService;
 
 @Log4j2
 public class GameService {
@@ -96,6 +98,18 @@ public class GameService {
         final List<RoundResult> rounds = roundService.getRoundsForGame(gameId);
 
         return new GameHistory(gameState, rounds);
+    }
+
+    public List<GameHistory> getGamesHistoryForPlayer(UUID playerId) {
+        final List<GameState> gameStates = gameStateRepository.getAllByPlayerId(playerId);
+
+        final List<GameHistory> gamesHistoryForPlayer = new ArrayList<>();
+        for (GameState gameState : gameStates) {
+            final List<RoundResult> rounds = roundService.getRoundsForGame(gameState.getGameId());
+            gamesHistoryForPlayer.add(new GameHistory(gameState, rounds));
+        }
+
+        return gamesHistoryForPlayer;
     }
 
     private void validateGameStartDetails(GameStartDetails gameStartDetails) {

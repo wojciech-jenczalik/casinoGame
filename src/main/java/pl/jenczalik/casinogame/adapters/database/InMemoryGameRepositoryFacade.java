@@ -31,6 +31,13 @@ public class InMemoryGameRepositoryFacade implements RoundResultRepository, Game
     }
 
     @Override
+    public List<GameState> getAllByPlayerId(UUID playerId) {
+        return gameStateJpaRepository.findAllByPlayerId(playerId).stream()
+                .map(GameStateEntity::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<RoundResult> getRoundsByGameId(UUID gameId) {
         return roundResultJpaRepository.findAllByGameId(gameId).stream()
                 .map(RoundResultEntity::toDomain)

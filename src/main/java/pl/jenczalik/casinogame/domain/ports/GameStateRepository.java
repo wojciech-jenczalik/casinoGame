@@ -1,5 +1,6 @@
 package pl.jenczalik.casinogame.domain.ports;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +14,5 @@ public interface GameStateRepository {
 
     Optional<GameState> getByGameIdAndPlayerId(UUID gameId, UUID playerId);
     Optional<GameState> getByGameId(UUID gameId);
+    List<GameState> getAllByPlayerId(UUID playerId);
 }

@@ -1,5 +1,6 @@
 package pl.jenczalik.casinogame.adapters.api;
 
+import java.util.List;
 import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/game")
+@RequestMapping("/games")
 @RequiredArgsConstructor
 class GameEndpoint {
     private final GameFacade gameFacade;
@@ -19,6 +20,11 @@ class GameEndpoint {
     @GetMapping("/{gameId}")
     GameHistoryResponse getGameHistory(@PathVariable UUID gameId) {
         return gameFacade.getGameHistory(gameId);
+    }
+
+    @GetMapping("/players/{playerId}")
+    List<GameHistoryResponse> getGamesHistoryForPlayer(@PathVariable UUID playerId) {
+        return gameFacade.getGamesHistoryForPlayer(playerId);
     }
 
     @PostMapping
