@@ -18,8 +18,6 @@ import pl.jenczalik.casinogame.domain.model.PlayRoundDetails;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
 
 @Log4j2
-
-// TODO add logs
 public class GameService {
     private final CashPolicyConfig cashPolicyConfig;
     private final Map<GameType, CashDeductionPolicy> cashDeductionPoliciesMap;
@@ -47,12 +45,17 @@ public class GameService {
                 gameStartDetails.getGameType(),
                 gameStartDetails.getPlayer(),
                 cashPolicyConfig.getDefaultInitialBalance());
+        log.info("started new game with ID {}, balance {}, player ID {}", newGame.getGameId(), newGame.getBalance(), newGame.getPlayer().getId());
 
         return gameStateRepository.save(newGame);
     }
 
-    // TODO test
     public GameState playRound(PlayRoundDetails playRoundDetails) {
+        log.debug("game {}. Playing new round with a bet {}, by player {}",
+                playRoundDetails.getGameId(),
+                playRoundDetails.getBet(),
+                playRoundDetails.getPlayerId());
+
         final UUID gameId = playRoundDetails.getGameId();
         final UUID playerId = playRoundDetails.getPlayerId();
         validatePlayRoundDetails(gameId, playerId);
@@ -64,9 +67,11 @@ public class GameService {
 
         final CashDeductionPolicy deductionPolicy;
         if (gameState.getFreeRounds() > 0) {
+            log.debug("game {}. Spending a free round", gameId);
             gameState.decrementFreeRounds();
             deductionPolicy = cashDeductionPoliciesMap.get(GameType.FREE);
         } else {
+            log.trace("game {}. No free round to spend", gameId);
             deductionPolicy = cashDeductionPoliciesMap.get(gameState.getGameType());
         }
 
@@ -74,15 +79,13 @@ public class GameService {
 
         final RoundResult roundResult = roundService.playRound(bet, gameId);
         if (roundResult.isFreeRoundWon()) {
+            log.debug("game {}. Free round won", gameId);
             gameState.incrementFreeRounds();
         }
         gameState.addToBalance(roundResult.getWinnings());
-        gameStateRepository.save(gameState);
-
-        return gameState;
+        return gameStateRepository.save(gameState);
     }
 
-    // TODO consider to move validation methods to separate class
     private void validateGameStartDetails(GameStartDetails gameStartDetails) {
         if (gameStartDetails.getPlayer() == null) {
             throw new IllegalStateException("could not start new game. Player is null");
@@ -120,6 +123,5 @@ public class GameService {
         if (bet.compareTo(balance) > 0) {
             throw new IllegalArgumentException(String.format("bet (%s) can not be greater than current balance (%s)", bet, balance));
         }
-        log.debug("bet valid");
     }
 }

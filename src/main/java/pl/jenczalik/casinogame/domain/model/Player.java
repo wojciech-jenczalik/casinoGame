@@ -16,6 +16,10 @@ public class Player {
         this.id = id;
     }
 
+    public static Player newPlayer() {
+        return fromUuid(UUID.randomUUID());
+    }
+
     public static Player fromUuid(UUID uuid) {
         if (uuid == null) {
             throw new IllegalArgumentException("player's UUID can not be null");

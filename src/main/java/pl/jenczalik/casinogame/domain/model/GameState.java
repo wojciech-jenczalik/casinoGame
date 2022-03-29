@@ -8,13 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
 @Getter
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-
-// TODO add loggers
+@Log4j2
 public class GameState {
     private final UUID gameId;
     private final GameType gameType;
@@ -30,8 +30,9 @@ public class GameState {
         balance = balance.add(amount);
     }
 
-    public void deductBalance(CashDeductionPolicy deductionPolicy, BigDecimal deductionAmount) {
-        balance = deductionPolicy.deductBetFromBalance(deductionAmount, balance);
+    public void deductBalance(CashDeductionPolicy deductionPolicy, BigDecimal bet) {
+        log.debug("game {}. Deducting bet [{}] from balance using {} policy", gameId, bet, deductionPolicy.getGameType());
+        balance = deductionPolicy.deductBetFromBalance(bet, balance);
     }
 
     public void incrementFreeRounds() {

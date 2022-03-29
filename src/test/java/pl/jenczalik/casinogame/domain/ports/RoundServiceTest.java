@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -18,25 +19,25 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.jenczalik.casinogame.config.RoundRewardsConfig;
-import pl.jenczalik.casinogame.domain.framework.SecureRandomStub;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
 
 @ExtendWith(MockitoExtension.class)
 class RoundServiceTest {
     private static final UUID RANDOM_GAME_UUID = UUID.randomUUID();
     private final RoundRewardsConfig roundRewardsConfig = new RoundRewardsConfig();
-    private final SecureRandomStub secureRandomStub = new SecureRandomStub();
     @Mock
     private RoundResultRepository roundResultRepository;
+    @Mock
+    private SecureRandom secureRandomMock;
     private final Clock clock = Clock.systemDefaultZone();
 
-    @SuppressWarnings("FieldCanBeLocal")
     // Subject
     private RoundService roundService;
 
     @BeforeEach
     void setup() {
         when(roundResultRepository.save(any())).then(AdditionalAnswers.returnsFirstArg());
+        roundService = new RoundService(roundRewardsConfig, secureRandomMock, roundResultRepository, clock);
     }
 
     @ParameterizedTest
@@ -49,8 +50,7 @@ class RoundServiceTest {
             boolean expectedFreeRoundWon) {
 
         // given
-        secureRandomStub.populateWithInts(cashWinRandomRoll, freeRoundRandomRoll);
-        roundService = new RoundService(roundRewardsConfig, secureRandomStub, roundResultRepository, clock);
+        when(secureRandomMock.nextInt(100)).thenReturn(cashWinRandomRoll, freeRoundRandomRoll);
 
         // when
         final RoundResult roundResult = roundService.playRound(bet, RANDOM_GAME_UUID);
