@@ -1,0 +1,41 @@
+### Start game for a given player
+POST http://localhost:8080/games
+Content-Type: application/json
+
+{
+    "playerId": "0939d770-24ac-4d33-9aaa-e1587a5b65bf"
+}
+
+### Start game for a new player
+POST http://localhost:8080/games
+Content-Type: application/json
+
+{
+
+}
+
+### Play free round of a given game
+POST http://localhost:8080/games/5bcc16e6-7353-44aa-9856-7b151871ddba
+Content-Type: application/json
+
+{
+    "playerId": "0939d770-24ac-4d33-9aaa-e1587a5b65bf",
+    "gameMode": "FREE",
+    "bet": 10
+}
+
+### Play paid round of a given game
+POST http://localhost:8080/games/5bcc16e6-7353-44aa-9856-7b151871ddba
+Content-Type: application/json
+
+{
+    "playerId": "0939d770-24ac-4d33-9aaa-e1587a5b65bf",
+    "gameMode": "PAID",
+    "bet": 10
+}
+
+### Get game history by game ID
+GET http://localhost:8080/games/5bcc16e6-7353-44aa-9856-7b151871ddba
+
+### Get games history by player ID
+GET http://localhost:8080/games/players/0939d770-24ac-4d33-9aaa-e1587a5b65bf
