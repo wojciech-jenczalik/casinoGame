@@ -34,6 +34,16 @@ Content-Type: application/json
     "bet": 10
 }
 
+### Place illegal bet
+POST http://localhost:8080/games/5bcc16e6-7353-44aa-9856-7b151871ddba
+Content-Type: application/json
+
+{
+    "playerId": "0939d770-24ac-4d33-9aaa-e1587a5b65bf",
+    "gameMode": "PAID",
+    "bet": -1
+}
+
 ### Get game history by game ID
 GET http://localhost:8080/games/5bcc16e6-7353-44aa-9856-7b151871ddba
 
