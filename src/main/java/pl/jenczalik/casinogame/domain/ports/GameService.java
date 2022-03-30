@@ -52,23 +52,28 @@ public class GameService {
 
     @Transactional
     public GameState playRound(GameType gameType, UUID gameId, UUID playerId, BigDecimal bet) {
-        log.debug("game {}. Playing new round with a bet {}, by player {} in game mode: {}", gameId, bet, playerId, gameType);
-        validatePlayRound(gameType, gameId, playerId);
+        boolean isFreeRoundWon = false;
+        GameState gameStateAfterRound;
+        do {
+            log.debug("game {}. Playing new round with a bet {}, by player {} in game mode: {}", gameId, bet, playerId, gameType);
+            validatePlayRound(gameType, gameId, playerId);
 
-        GameState gameState = gameStateRepository.getByGameIdAndPlayerId(gameId, playerId);
-        validateBet(bet, gameState.getBalance());
+            final GameState gameState = gameStateRepository.getByGameIdAndPlayerId(gameId, playerId);
+            validateBet(bet, gameState.getBalance());
 
-        gameState.deductBetFromBalance(cashDeductionPoliciesMap.get(gameType), bet);
+            final CashDeductionPolicy cashDeductionPolicy = isFreeRoundWon ?
+                    cashDeductionPoliciesMap.get(GameType.FREE) :
+                    cashDeductionPoliciesMap.get(gameType);
 
-        final RoundResult roundResult = roundService.playRound(bet, gameId);
-        gameState.addToBalance(roundResult.getWinnings());
+            gameState.deductBetFromBalance(cashDeductionPolicy, bet);
 
-        GameState gameStateAfterRound = gameStateRepository.save(gameState);
+            final RoundResult roundResult = roundService.playRound(bet, gameId);
+            gameState.addToBalance(roundResult.getWinnings());
 
-        if (roundResult.isFreeRoundWon()) {
-            log.debug("game {}. Free round won", gameId);
-            gameStateAfterRound = playRound(GameType.FREE, gameId, playerId, bet);
-        }
+            gameStateAfterRound = gameStateRepository.save(gameState);
+
+            isFreeRoundWon = roundResult.isFreeRoundWon();
+        } while (isFreeRoundWon);
 
         return gameStateAfterRound;
     }
