@@ -41,6 +41,8 @@ public class RoundService {
         final BigDecimal freeRoundWinRand = BigDecimal.valueOf(random.nextInt(100));
         final boolean isFreeRoundWon = freeRoundWinRand.compareTo(roundRewardsConfig.getFreeRoundWinChancePercentage()) < 0;
 
+        log.debug("game {}. Round results: {} winnings and free round won ({})", gameId, winnings, isFreeRoundWon);
+
         return roundResultRepository.save(new RoundResult(winnings, isFreeRoundWon, gameId, LocalDateTime.now(clock)));
     }
 

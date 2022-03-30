@@ -41,42 +41,36 @@ public class GameService {
     }
 
     @Transactional
-    public GameState startGame(GameType gameType, Player player) {
-        validateGameStart(gameType, player);
+    public GameState startGame(Player player) {
+        validateGameStart(player);
 
-        final GameState newGame = GameState.newGame(gameType, player, cashPolicyConfig.getDefaultInitialBalance());
+        final GameState newGame = GameState.newGame(player, cashPolicyConfig.getDefaultInitialBalance());
         log.info("started new game with ID {}, balance {}, player ID {}", newGame.getGameId(), newGame.getBalance(), newGame.getPlayer().getId());
 
         return gameStateRepository.save(newGame);
     }
 
     @Transactional
-    public GameState playRound(UUID gameId, UUID playerId, BigDecimal bet) {
-        log.debug("game {}. Playing new round with a bet {}, by player {}", gameId, bet, playerId);
-        validatePlayRoundDetails(gameId, playerId);
+    public GameState playRound(GameType gameType, UUID gameId, UUID playerId, BigDecimal bet) {
+        log.debug("game {}. Playing new round with a bet {}, by player {} in game mode: {}", gameId, bet, playerId, gameType);
+        validatePlayRound(gameType, gameId, playerId);
 
         GameState gameState = gameStateRepository.getByGameIdAndPlayerId(gameId, playerId);
         validateBet(bet, gameState.getBalance());
 
-        final CashDeductionPolicy deductionPolicy;
-        if (gameState.getFreeRounds() > 0) {
-            log.debug("game {}. Spending a free round", gameId);
-            gameState.decrementFreeRounds();
-            deductionPolicy = cashDeductionPoliciesMap.get(GameType.FREE);
-        } else {
-            log.trace("game {}. No free round to spend", gameId);
-            deductionPolicy = cashDeductionPoliciesMap.get(gameState.getGameType());
-        }
-
-        gameState.deductBetFromBalance(deductionPolicy, bet);
+        gameState.deductBetFromBalance(cashDeductionPoliciesMap.get(gameType), bet);
 
         final RoundResult roundResult = roundService.playRound(bet, gameId);
+        gameState.addToBalance(roundResult.getWinnings());
+
+        GameState gameStateAfterRound = gameStateRepository.save(gameState);
+
         if (roundResult.isFreeRoundWon()) {
             log.debug("game {}. Free round won", gameId);
-            gameState.incrementFreeRounds();
+            gameStateAfterRound = playRound(GameType.FREE, gameId, playerId, bet);
         }
-        gameState.addToBalance(roundResult.getWinnings());
-        return gameStateRepository.save(gameState);
+
+        return gameStateAfterRound;
     }
 
     public GameHistory getGameHistory(UUID gameId) {
@@ -98,17 +92,17 @@ public class GameService {
         return gamesHistoryForPlayer;
     }
 
-    private void validateGameStart(GameType gameType, Player player) {
+    private void validateGameStart(Player player) {
         if (player == null) {
             throw new IllegalStateException("could not start new game. Player is null");
         }
+    }
+
+    private void validatePlayRound(GameType gameType, UUID gameId, UUID playerId) {
         final CashDeductionPolicy deductionPolicy = cashDeductionPoliciesMap.get(gameType);
         if (deductionPolicy == null) {
             throw new IllegalStateException(String.format("could not start a new game. Cash deduction policy not found for game type: %s", gameType));
         }
-    }
-
-    private void validatePlayRoundDetails(UUID gameId, UUID playerId) {
         if (gameId == null) {
             throw new IllegalArgumentException("gameId must not be null");
         }

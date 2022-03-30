@@ -19,12 +19,12 @@ class GameFacade {
     GameStateResponse startGame(GameStartRequest request) {
         final UUID playerId = request.getPlayerId();
         final Player player = playerId == null ? Player.newPlayer() : Player.fromId(playerId);
-        final GameState gameState = gameService.startGame(request.getGameType(), player);
+        final GameState gameState = gameService.startGame(player);
         return GameStateResponse.fromDomain(gameState);
     }
 
     GameStateResponse playRound(UUID gameId, PlayRoundRequest request) {
-        final GameState gameState = gameService.playRound(gameId, request.getPlayerId(), request.getBet());
+        final GameState gameState = gameService.playRound(request.getGameType(), gameId, request.getPlayerId(), request.getBet());
         return GameStateResponse.fromDomain(gameState);
     }
 

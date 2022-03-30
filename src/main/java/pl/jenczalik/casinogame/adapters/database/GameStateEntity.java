@@ -24,28 +24,22 @@ import pl.jenczalik.casinogame.domain.model.Player;
 class GameStateEntity {
     @Id
     private UUID gameId;
-    private GameType gameType;
     private UUID playerId;
     private BigDecimal balance;
-    private int freeRounds;
 
     GameState toDomain() {
         return GameState.builder()
                 .gameId(gameId)
-                .gameType(gameType)
                 .player(Player.fromId(playerId))
                 .balance(balance)
-                .freeRounds(freeRounds)
                 .build();
     }
 
     static GameStateEntity fromDomain(GameState gameState) {
         return GameStateEntity.builder()
                 .gameId(gameState.getGameId())
-                .gameType(gameState.getGameType())
                 .playerId(gameState.getPlayer().getId())
                 .balance(gameState.getBalance())
-                .freeRounds(gameState.getFreeRounds())
                 .build();
     }
 }

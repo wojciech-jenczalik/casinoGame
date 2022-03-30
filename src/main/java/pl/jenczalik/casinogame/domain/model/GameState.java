@@ -20,13 +20,11 @@ import pl.jenczalik.casinogame.domain.services.CashDeductionPolicy;
 @Log4j2
 public class GameState {
     private final UUID gameId;
-    private final GameType gameType;
     private final Player player;
     private BigDecimal balance;
-    private int freeRounds;
 
-    public static GameState newGame(GameType gameType, Player player, BigDecimal balance) {
-        return new GameState(UUID.randomUUID(), gameType, player, balance, 0);
+    public static GameState newGame(Player player, BigDecimal balance) {
+        return new GameState(UUID.randomUUID(), player, balance);
     }
 
     public void addToBalance(BigDecimal amount) {
@@ -45,13 +43,5 @@ public class GameState {
         }
         log.debug("game {}. Deducting bet [{}] from balance using {} policy", gameId, bet, deductionPolicy.getGameType());
         balance = deductionPolicy.deductBetFromBalance(bet, balance);
-    }
-
-    public void incrementFreeRounds() {
-        ++freeRounds;
-    }
-
-    public void decrementFreeRounds() {
-        --freeRounds;
     }
 }
