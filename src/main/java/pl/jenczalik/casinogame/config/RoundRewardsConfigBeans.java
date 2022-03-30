@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(RoundRewardsConfig.class)
-public class RoundRewardsConfigBeans {
+class RoundRewardsConfigBeans {
     private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
     @Bean
-    public RoundRewardsConfig roundRewardsConfig() {
+    RoundRewardsConfig roundRewardsConfig() {
         final RoundRewardsConfig config = new RoundRewardsConfig();
         validateRoundRewardsConfig(config);
         return config;

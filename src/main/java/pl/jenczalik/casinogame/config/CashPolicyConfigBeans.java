@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(CashPolicyConfig.class)
-public class CashPolicyConfigBeans {
+class CashPolicyConfigBeans {
     @Bean
-    public CashPolicyConfig cashPolicyConfig() {
+    CashPolicyConfig cashPolicyConfig() {
         return new CashPolicyConfig();
     }
 }

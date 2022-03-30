@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InMemoryRoundResultJpaRepository extends JpaRepository<RoundResultEntity, UUID> {
+public interface RoundResultJpaRepository extends JpaRepository<RoundResultEntity, UUID> {
     List<RoundResultEntity> findAllByGameId(UUID gameId);
 }

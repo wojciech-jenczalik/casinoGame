@@ -30,10 +30,19 @@ public class GameState {
     }
 
     public void addToBalance(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalStateException("can not add negative amount to balance");
+        }
         balance = balance.add(amount);
     }
 
-    public void deductBalance(CashDeductionPolicy deductionPolicy, BigDecimal bet) {
+    public void deductBetFromBalance(CashDeductionPolicy deductionPolicy, BigDecimal bet) {
+        if (bet.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalStateException("can not place negative bet");
+        }
+        if (deductionPolicy == null) {
+            throw new IllegalStateException("deduction policy is null");
+        }
         log.debug("game {}. Deducting bet [{}] from balance using {} policy", gameId, bet, deductionPolicy.getGameType());
         balance = deductionPolicy.deductBetFromBalance(bet, balance);
     }

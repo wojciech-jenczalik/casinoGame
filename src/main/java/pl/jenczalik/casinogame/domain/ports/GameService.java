@@ -11,14 +11,12 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.transaction.annotation.Transactional;
 import pl.jenczalik.casinogame.config.CashPolicyConfig;
-import pl.jenczalik.casinogame.domain.services.CashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.model.GameHistory;
-import pl.jenczalik.casinogame.domain.model.GameNotFoundException;
-import pl.jenczalik.casinogame.domain.model.GameStartDetails;
 import pl.jenczalik.casinogame.domain.model.GameState;
 import pl.jenczalik.casinogame.domain.model.GameType;
-import pl.jenczalik.casinogame.domain.model.PlayRoundDetails;
+import pl.jenczalik.casinogame.domain.model.Player;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
+import pl.jenczalik.casinogame.domain.services.CashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.services.RoundService;
 
 @Log4j2
@@ -43,32 +41,21 @@ public class GameService {
     }
 
     @Transactional
-    public GameState startGame(GameStartDetails gameStartDetails) {
-        validateGameStartDetails(gameStartDetails);
+    public GameState startGame(GameType gameType, Player player) {
+        validateGameStart(gameType, player);
 
-        final GameState newGame = GameState.newGame(
-                gameStartDetails.getGameType(),
-                gameStartDetails.getPlayer(),
-                cashPolicyConfig.getDefaultInitialBalance());
+        final GameState newGame = GameState.newGame(gameType, player, cashPolicyConfig.getDefaultInitialBalance());
         log.info("started new game with ID {}, balance {}, player ID {}", newGame.getGameId(), newGame.getBalance(), newGame.getPlayer().getId());
 
         return gameStateRepository.save(newGame);
     }
 
     @Transactional
-    public GameState playRound(PlayRoundDetails playRoundDetails) {
-        log.debug("game {}. Playing new round with a bet {}, by player {}",
-                playRoundDetails.getGameId(),
-                playRoundDetails.getBet(),
-                playRoundDetails.getPlayerId());
-
-        final UUID gameId = playRoundDetails.getGameId();
-        final UUID playerId = playRoundDetails.getPlayerId();
+    public GameState playRound(UUID gameId, UUID playerId, BigDecimal bet) {
+        log.debug("game {}. Playing new round with a bet {}, by player {}", gameId, bet, playerId);
         validatePlayRoundDetails(gameId, playerId);
 
-        final BigDecimal bet = playRoundDetails.getBet();
-        GameState gameState = gameStateRepository.getByGameIdAndPlayerId(gameId, playerId)
-                .orElseThrow(() -> new GameNotFoundException(String.format("game with ID [%s] not found for user with ID [%s]", gameId, playerId)));
+        GameState gameState = gameStateRepository.getByGameIdAndPlayerId(gameId, playerId);
         validateBet(bet, gameState.getBalance());
 
         final CashDeductionPolicy deductionPolicy;
@@ -81,7 +68,7 @@ public class GameService {
             deductionPolicy = cashDeductionPoliciesMap.get(gameState.getGameType());
         }
 
-        gameState.deductBalance(deductionPolicy, bet);
+        gameState.deductBetFromBalance(deductionPolicy, bet);
 
         final RoundResult roundResult = roundService.playRound(bet, gameId);
         if (roundResult.isFreeRoundWon()) {
@@ -93,8 +80,7 @@ public class GameService {
     }
 
     public GameHistory getGameHistory(UUID gameId) {
-        final GameState gameState = gameStateRepository.getByGameId(gameId)
-                .orElseThrow(() -> new GameNotFoundException(String.format("game with ID [%s] not found", gameId)));
+        final GameState gameState = gameStateRepository.getByGameId(gameId);
         final List<RoundResult> rounds = roundService.getRoundsForGame(gameId);
 
         return new GameHistory(gameState, rounds);
@@ -112,15 +98,13 @@ public class GameService {
         return gamesHistoryForPlayer;
     }
 
-    private void validateGameStartDetails(GameStartDetails gameStartDetails) {
-        if (gameStartDetails.getPlayer() == null) {
+    private void validateGameStart(GameType gameType, Player player) {
+        if (player == null) {
             throw new IllegalStateException("could not start new game. Player is null");
         }
-        final CashDeductionPolicy deductionPolicy = cashDeductionPoliciesMap.get(gameStartDetails.getGameType());
+        final CashDeductionPolicy deductionPolicy = cashDeductionPoliciesMap.get(gameType);
         if (deductionPolicy == null) {
-            throw new IllegalStateException(String.format(
-                    "could not start a new game. Cash deduction policy not found for game type: %s",
-                    gameStartDetails.getGameType()));
+            throw new IllegalStateException(String.format("could not start a new game. Cash deduction policy not found for game type: %s", gameType));
         }
     }
 

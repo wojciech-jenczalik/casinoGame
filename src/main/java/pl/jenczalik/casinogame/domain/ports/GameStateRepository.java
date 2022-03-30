@@ -1,7 +1,6 @@
 package pl.jenczalik.casinogame.domain.ports;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.transaction.annotation.Propagation;
@@ -12,7 +11,7 @@ public interface GameStateRepository {
     @Transactional(propagation = Propagation.MANDATORY)
     GameState save(GameState gameState);
 
-    Optional<GameState> getByGameIdAndPlayerId(UUID gameId, UUID playerId);
-    Optional<GameState> getByGameId(UUID gameId);
+    GameState getByGameIdAndPlayerId(UUID gameId, UUID playerId);
+    GameState getByGameId(UUID gameId);
     List<GameState> getAllByPlayerId(UUID playerId);
 }

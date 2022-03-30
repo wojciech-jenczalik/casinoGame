@@ -1,4 +1,4 @@
-package pl.jenczalik.casinogame.adapters.config;
+package pl.jenczalik.casinogame.config;
 
 import java.security.SecureRandom;
 import java.time.Clock;
@@ -6,14 +6,12 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pl.jenczalik.casinogame.config.CashPolicyConfig;
-import pl.jenczalik.casinogame.config.RoundRewardsConfig;
-import pl.jenczalik.casinogame.domain.services.CashDeductionPolicy;
-import pl.jenczalik.casinogame.domain.services.FreeCashDeductionPolicy;
-import pl.jenczalik.casinogame.domain.services.PaidCashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.ports.GameService;
 import pl.jenczalik.casinogame.domain.ports.GameStateRepository;
 import pl.jenczalik.casinogame.domain.ports.RoundResultRepository;
+import pl.jenczalik.casinogame.domain.services.CashDeductionPolicy;
+import pl.jenczalik.casinogame.domain.services.FreeCashDeductionPolicy;
+import pl.jenczalik.casinogame.domain.services.PaidCashDeductionPolicy;
 import pl.jenczalik.casinogame.domain.services.RoundService;
 
 @Configuration
