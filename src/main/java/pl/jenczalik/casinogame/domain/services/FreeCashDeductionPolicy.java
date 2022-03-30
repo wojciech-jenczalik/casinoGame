@@ -3,13 +3,13 @@ package pl.jenczalik.casinogame.domain.services;
 import java.math.BigDecimal;
 
 import lombok.extern.log4j.Log4j2;
-import pl.jenczalik.casinogame.domain.model.GameType;
+import pl.jenczalik.casinogame.domain.model.GameMode;
 
 @Log4j2
 public class FreeCashDeductionPolicy implements CashDeductionPolicy {
     @Override
-    public GameType getGameType() {
-        return GameType.FREE;
+    public GameMode getGameMode() {
+        return GameMode.FREE;
     }
 
     @Override

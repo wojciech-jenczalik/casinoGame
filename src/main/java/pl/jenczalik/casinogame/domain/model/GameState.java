@@ -41,7 +41,7 @@ public class GameState {
         if (deductionPolicy == null) {
             throw new IllegalStateException("deduction policy is null");
         }
-        log.debug("game {}. Deducting bet [{}] from balance using {} policy", gameId, bet, deductionPolicy.getGameType());
+        log.debug("game {}. Deducting bet [{}] from balance using {} policy", gameId, bet, deductionPolicy.getGameMode());
         balance = deductionPolicy.deductBetFromBalance(bet, balance);
     }
 }

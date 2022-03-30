@@ -2,9 +2,9 @@ package pl.jenczalik.casinogame.domain.services;
 
 import java.math.BigDecimal;
 
-import pl.jenczalik.casinogame.domain.model.GameType;
+import pl.jenczalik.casinogame.domain.model.GameMode;
 
 public interface CashDeductionPolicy {
-    GameType getGameType();
+    GameMode getGameMode();
     BigDecimal deductBetFromBalance(BigDecimal bet, BigDecimal balance);
 }

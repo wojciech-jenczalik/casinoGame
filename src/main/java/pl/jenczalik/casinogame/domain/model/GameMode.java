@@ -1,6 +1,6 @@
 package pl.jenczalik.casinogame.domain.model;
 
-public enum GameType {
+public enum GameMode {
     FREE,
     PAID
 }

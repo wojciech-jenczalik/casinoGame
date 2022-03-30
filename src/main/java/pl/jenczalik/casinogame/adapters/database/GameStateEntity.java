@@ -12,7 +12,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pl.jenczalik.casinogame.domain.model.GameState;
-import pl.jenczalik.casinogame.domain.model.GameType;
 import pl.jenczalik.casinogame.domain.model.Player;
 
 @Entity

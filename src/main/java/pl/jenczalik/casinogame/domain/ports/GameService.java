@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.jenczalik.casinogame.config.CashPolicyConfig;
 import pl.jenczalik.casinogame.domain.model.GameHistory;
 import pl.jenczalik.casinogame.domain.model.GameState;
-import pl.jenczalik.casinogame.domain.model.GameType;
+import pl.jenczalik.casinogame.domain.model.GameMode;
 import pl.jenczalik.casinogame.domain.model.Player;
 import pl.jenczalik.casinogame.domain.model.RoundResult;
 import pl.jenczalik.casinogame.domain.services.CashDeductionPolicy;
@@ -22,7 +22,7 @@ import pl.jenczalik.casinogame.domain.services.RoundService;
 @Log4j2
 public class GameService {
     private final CashPolicyConfig cashPolicyConfig;
-    private final Map<GameType, CashDeductionPolicy> cashDeductionPoliciesMap;
+    private final Map<GameMode, CashDeductionPolicy> cashDeductionPoliciesMap;
     private final GameStateRepository gameStateRepository;
     private final RoundService roundService;
 
@@ -33,7 +33,7 @@ public class GameService {
         this.cashPolicyConfig = cashPolicyConfig;
         this.cashDeductionPoliciesMap = cashDeductionPolicies.stream()
                 .collect(Collectors.toMap(
-                        CashDeductionPolicy::getGameType,
+                        CashDeductionPolicy::getGameMode,
                         Function.identity()
                 ));
         this.gameStateRepository = gameStateRepository;
@@ -51,19 +51,19 @@ public class GameService {
     }
 
     @Transactional
-    public GameState playRound(GameType gameType, UUID gameId, UUID playerId, BigDecimal bet) {
+    public GameState playRound(GameMode gameMode, UUID gameId, UUID playerId, BigDecimal bet) {
         boolean isFreeRoundWon = false;
         GameState gameStateAfterRound;
         do {
-            log.debug("game {}. Playing new round with a bet {}, by player {} in game mode: {}", gameId, bet, playerId, gameType);
-            validatePlayRound(gameType, gameId, playerId);
+            log.debug("game {}. Playing new round with a bet {}, by player {} in game mode: {}", gameId, bet, playerId, gameMode);
+            validatePlayRound(gameMode, gameId, playerId);
 
             final GameState gameState = gameStateRepository.getByGameIdAndPlayerId(gameId, playerId);
             validateBet(bet, gameState.getBalance());
 
             final CashDeductionPolicy cashDeductionPolicy = isFreeRoundWon ?
-                    cashDeductionPoliciesMap.get(GameType.FREE) :
-                    cashDeductionPoliciesMap.get(gameType);
+                    cashDeductionPoliciesMap.get(GameMode.FREE) :
+                    cashDeductionPoliciesMap.get(gameMode);
 
             gameState.deductBetFromBalance(cashDeductionPolicy, bet);
 
@@ -103,10 +103,10 @@ public class GameService {
         }
     }
 
-    private void validatePlayRound(GameType gameType, UUID gameId, UUID playerId) {
-        final CashDeductionPolicy deductionPolicy = cashDeductionPoliciesMap.get(gameType);
+    private void validatePlayRound(GameMode gameMode, UUID gameId, UUID playerId) {
+        final CashDeductionPolicy deductionPolicy = cashDeductionPoliciesMap.get(gameMode);
         if (deductionPolicy == null) {
-            throw new IllegalStateException(String.format("could not start a new game. Cash deduction policy not found for game type: %s", gameType));
+            throw new IllegalStateException(String.format("could not start a new game. Cash deduction policy not found for game type: %s", gameMode));
         }
         if (gameId == null) {
             throw new IllegalArgumentException("gameId must not be null");

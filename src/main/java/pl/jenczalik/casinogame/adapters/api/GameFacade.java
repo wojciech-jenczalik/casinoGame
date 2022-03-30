@@ -24,7 +24,7 @@ class GameFacade {
     }
 
     GameStateResponse playRound(UUID gameId, PlayRoundRequest request) {
-        final GameState gameState = gameService.playRound(request.getGameType(), gameId, request.getPlayerId(), request.getBet());
+        final GameState gameState = gameService.playRound(request.getGameMode(), gameId, request.getPlayerId(), request.getBet());
         return GameStateResponse.fromDomain(gameState);
     }
 
